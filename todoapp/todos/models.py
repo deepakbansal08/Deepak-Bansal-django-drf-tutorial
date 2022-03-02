@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 from datetime import datetime
 
 from django.db import models
+from django.db.models.signals import pre_save
 from django.utils.encoding import smart_text as smart_unicode
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
@@ -18,13 +19,17 @@ class Todo(models.Model):
 
         Add string representation for this model with todos name.
     """
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     done = models.BooleanField(default=False)
     date_created = models.DateTimeField(default=datetime.now)
     date_completed = models.DateTimeField(blank=True, null=True)
 
-    def save(self, *args, **kwargs):
-        if self.done and self.date_completed is None:
-            self.pub_date = datetime.now()
-        super(Todo, self).save(*args, **kwargs)
+
+def todo_pre_save(sender, instance, *args, **kwargs):
+    if instance.done and instance.date_completed is None:
+        instance.date_completed = datetime.now()
+
+
+pre_save.connect(todo_pre_save, sender=Todo)

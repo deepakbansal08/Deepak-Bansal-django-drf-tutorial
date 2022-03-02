@@ -4,7 +4,7 @@ from datetime import datetime
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
-from django.contrib.auth.hashers import make_password
+from django.db.models.signals import pre_save
 from django.db import models
 
 
@@ -66,3 +66,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name']
+
+def custom_user_pre_save(sender, instance, *args, **kwargs):
+    if not instance.date_joined:
+        instance.date_joined = datetime.now()
+
+pre_save.connect(custom_user_pre_save, sender=CustomUser)

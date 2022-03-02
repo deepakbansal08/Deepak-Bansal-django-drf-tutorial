@@ -89,7 +89,7 @@ DATABASES = {
     u'default': {
         u'ENGINE': u'django.db.backends.postgresql',
         # Add database name.
-        u'NAME': u'django_drf_exercise',
+        u'NAME': u'django_drf_exercise_2',
         # Add psql user name. For default use postgres.
         u'USER': u'test',
         # Add user password if exists.
