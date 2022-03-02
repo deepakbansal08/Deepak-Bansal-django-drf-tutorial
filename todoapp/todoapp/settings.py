@@ -88,10 +88,14 @@ WSGI_APPLICATION = 'todoapp.wsgi.application'
 DATABASES = {
     u'default': {
         u'ENGINE': u'django.db.backends.postgresql',
-        u'NAME': u'',                      # Add database name.
-        u'USER': u'postgres',              # Add psql user name. For default use postgres.
-        u'PASSWORD': u'',                  # Add user password if exists.
-        u'HOST': u'',                      # Set to empty string for localhost..
+        # Add database name.
+        u'NAME': u'django_drf_exercise',
+        # Add psql user name. For default use postgres.
+        u'USER': u'test',
+        # Add user password if exists.
+        u'PASSWORD': u'Test@123',
+        # Set to empty string for localhost..
+        u'HOST': u'127.0.0.1',
         u'PORT': u'5432',                  # Psql service running port.
     },
 }
