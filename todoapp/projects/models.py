@@ -25,6 +25,8 @@ class Project(models.Model):
     max_members = models.PositiveIntegerField()
     status = models.IntegerField(default=0, choices=STATUS_CHOICES)
 
+    def __str__(self):
+        return self.name
 
 class ProjectMember(models.Model):
     """
