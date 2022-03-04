@@ -1,6 +1,4 @@
-from django.contrib.auth import get_user_model
 from rest_framework import serializers
-
 
 # Add your serializer(s) here
 
@@ -46,9 +44,31 @@ class fetch_five_users_with_max_pending_todos_serializer(serializers.Serializer)
     pending_count = serializers.IntegerField()
 
 
-class fetch_users_with_n_pending_todos_serializer():
+class fetch_users_with_n_pending_todos_serializer(serializers.Serializer):
     id = serializers.IntegerField()
     first_name = serializers.CharField()
     last_name = serializers.CharField()
     email = serializers.EmailField()
     pending_count = serializers.IntegerField()
+
+
+class project_report_serializer(serializers.Serializer):
+    first_name = serializers.CharField()
+    last_name = serializers.CharField()
+    email = serializers.EmailField()
+    pending_count = serializers.IntegerField()
+    completed_count = serializers.IntegerField()
+
+
+class fetch_project_wise_report_serializer(serializers.Serializer):
+    project_title = serializers.CharField(source="name")
+    report = project_report_serializer(many=True, source="members")
+
+
+class fetch_user_wise_project_status_serializer(serializers.Serializer):
+    first_name = serializers.CharField()
+    last_name = serializers.CharField()
+    email = serializers.EmailField()
+    to_do_projects = serializers.ListField()
+    completed_projects = serializers.ListField()
+    in_progress_projects = serializers.ListField()

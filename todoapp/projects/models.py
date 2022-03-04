@@ -20,7 +20,7 @@ class Project(models.Model):
     )
 
     members = models.ManyToManyField(
-        settings.AUTH_USER_MODEL, through='ProjectMember')
+        settings.AUTH_USER_MODEL, through='ProjectMember', related_name='projects')
     name = models.CharField(max_length=100)
     max_members = models.PositiveIntegerField()
     status = models.IntegerField(default=0, choices=STATUS_CHOICES)
