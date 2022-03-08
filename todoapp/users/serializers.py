@@ -1,10 +1,50 @@
 from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
-from django.contrib.auth.hashers import make_password
-from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
 from rest_framework.authtoken.models import Token
 
 
 # Add your serializers
+class LoginSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+    password = serializers.CharField(required=True)
+
+    def validate(self, attrs):
+        email = attrs.get('email')
+        password = attrs.get('password')
+        print(email, password)
+
+        user = authenticate(request=self.context.get(
+            'request'), email=email, password=password)
+
+        if not user:
+            msg = 'Unable to log in with provided credentials.'
+            raise serializers.ValidationError(msg, code='authorization')
+
+        attrs['user'] = user
+        return attrs
+
+
+class RegisterSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(
+        required=True,
+        validators=[
+            UniqueValidator(queryset=get_user_model().objects.all())
+        ]
+    )
+    token = serializers.SerializerMethodField(
+        method_name='get_auth_token', read_only=True)
+
+    def get_auth_token(self, instance):
+        user = get_user_model().objects.create_user(**instance)
+        token = Token.objects.get_or_create(user=user)
+        return token[0].key
+
+    class Meta:
+        model = get_user_model()
+        fields = ['first_name', 'last_name', 'email',
+                  'password', 'date_joined', 'token']
+        read_only_fields = ('date_joined', 'token')
+        extra_kwargs = {'password': {'write_only': True}}
