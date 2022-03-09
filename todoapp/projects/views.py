@@ -2,12 +2,18 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from projects.models import ProjectMember
-from projects.serializers import ProjectMemberSerializer
+from projects.serializers import ProjectMemberCreateSerializer, ProjectMemberDestroySerializer
+
 
 class ProjectMemberApiViewSet(ModelViewSet):
     permission_classes = []
     queryset = ProjectMember.objects.all()
-    serializer_class = ProjectMemberSerializer    
+    serializer_class = ProjectMemberCreateSerializer
+    serializer_classes = {
+        "create": ProjectMemberCreateSerializer,
+        "destroy": ProjectMemberDestroySerializer
+    }
+
     """
        constraints
         - a user can be a member of max 2 projects only
@@ -44,9 +50,24 @@ class ProjectMemberApiViewSet(ModelViewSet):
 
          there will be many other cases think of that and share on forum
     """
+
+    def get_serializer_class(self):
+        try:
+            return self.serializer_classes[self.action]
+        except (KeyError, AttributeError):
+            return self.serializer_class
+
     def create(self, request):
-        query_params = request.query_params
         data = request.data
-        serializer = self.serializer_class(data=data, context={"project_id": query_params.get("project_id")})
+        serializer_class = self.get_serializer_class()
+        serializer = serializer_class(data=data, context={"request": request})
+        serializer.is_valid(raise_exception=True)
+        return Response(serializer.validated_data)
+
+    def destroy(self, request, pk):
+        data = request.data
+        serializer_class = self.get_serializer_class()
+        serializer = serializer_class(
+            data=data, context={"request": request, "project_id": pk})
         serializer.is_valid(raise_exception=True)
         return Response(serializer.validated_data)
