@@ -45,8 +45,13 @@ class ProjectMemberApiViewSet(ModelViewSet):
          there will be many other cases think of that and share on forum
     """
     def create(self, request):
-        query_params = request.query_params
         data = request.data
-        serializer = self.serializer_class(data=data, context={"project_id": query_params.get("project_id")})
+        serializer = self.serializer_class(data=data, context={"request": request})
+        serializer.is_valid(raise_exception=True)
+        return Response(serializer.validated_data)
+
+    def destroy(self, request, pk):
+        data = request.data
+        serializer = self.serializer_class(data=data, context={"request": request, "project_id": pk})
         serializer.is_valid(raise_exception=True)
         return Response(serializer.validated_data)
