@@ -13,7 +13,7 @@ class UserManager(BaseUserManager):
     Add manager methods here to create user and super user
     """
 
-    def create_user(self, email, first_name, last_name, password=None):
+    def create_user(self, email, first_name, last_name, password=None, **args):
         if not email:
             raise ValueError("insert user")
         if not first_name:
@@ -29,7 +29,7 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, first_name, last_name, password):
+    def create_superuser(self, email, first_name, last_name, password, **args):
         user = self.create_user(
             email=email,
             first_name=first_name,

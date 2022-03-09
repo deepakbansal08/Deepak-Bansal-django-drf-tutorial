@@ -1,6 +1,23 @@
 from rest_framework import serializers
 
+from todos.models import Todo
+
 # Add your serializer(s) here
+
+
+class TodoSerializer(serializers.ModelSerializer):
+    todo = serializers.CharField(source='name')
+    todo_id = serializers.PrimaryKeyRelatedField(source='id', read_only=True)
+
+    class Meta:
+        model = Todo
+        fields = ['todo_id', 'done', 'todo', 'date_created']
+        read_only_fields = ['date_created']
+
+    def create(self, validated_data):
+        validated_data['user'] = self.context['request'].user
+        return super(TodoSerializer, self).create(validated_data)
+
 
 class UserSerializer(serializers.Serializer):
     email = serializers.EmailField()

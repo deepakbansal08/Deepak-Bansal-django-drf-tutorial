@@ -14,7 +14,6 @@ class LoginSerializer(serializers.Serializer):
     def validate(self, attrs):
         email = attrs.get('email')
         password = attrs.get('password')
-        print(email, password)
 
         user = authenticate(request=self.context.get(
             'request'), email=email, password=password)
@@ -38,13 +37,12 @@ class RegisterSerializer(serializers.ModelSerializer):
         method_name='get_auth_token', read_only=True)
 
     def get_auth_token(self, instance):
-        user = get_user_model().objects.create_user(**instance)
-        token = Token.objects.get_or_create(user=user)
+        token = Token.objects.get_or_create(user=instance)
         return token[0].key
 
     class Meta:
         model = get_user_model()
-        fields = ['first_name', 'last_name', 'email',
-                  'password', 'date_joined', 'token']
-        read_only_fields = ('date_joined', 'token')
+        fields = ['first_name', 'last_name',
+                  'date_joined', 'password', 'email', 'token']
         extra_kwargs = {'password': {'write_only': True}}
+        read_only_fields = ['date_joined']
