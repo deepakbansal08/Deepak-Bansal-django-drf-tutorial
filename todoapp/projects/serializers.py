@@ -16,6 +16,8 @@ class ProjectMemberCreateSerializer(serializers.Serializer):
 
         project_id = self.context["request"].query_params["project_id"]
         user_ids = data['user_ids']
+        request_method = self.context["request"].method
+        print(request_method)
         result = {}
 
         # filter users that do not exist
@@ -41,8 +43,7 @@ class ProjectMemberCreateSerializer(serializers.Serializer):
                 return False
             return True
 
-        user_ids_iterator = filter(usersAlreadyInProjectFilter, user_ids)
-        user_ids = list(user_ids_iterator)
+            project_id = self.context["request"].query_params["project_id"]
 
         # filter user_ids involved in two projects
         usersInTwoOrMoreProjects = CustomUser.objects.filter(pk__in=user_ids).annotate(
